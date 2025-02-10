@@ -1,0 +1,2 @@
+$uninstallpath = get-childitem -path "C:\programdata\package cache\{506f03f6-29ca-499a-bd38-5c313e6f3a7d}" -Include Setup64.exe -recurse -outvariable NewVar;
+$uninstallpath.fullname  /uninstall /quiet
