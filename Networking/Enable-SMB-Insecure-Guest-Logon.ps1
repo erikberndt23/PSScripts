@@ -1,0 +1,1 @@
+Set-SmbClientConfiguration -EnableInsecureGuestLogons $true
