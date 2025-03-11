@@ -1,6 +1,6 @@
 # software to uninstall
 
-$software = "*7-Zip*"
+$software = "*Teamviewer*"
 
 # registry path to search
 
@@ -13,6 +13,6 @@ Get-ChildItem $reg |
     ForEach-Object{
         $uninstallString = $_.GetValue('UninstallString')
         $UninstallString = "$UninstallString"
-        $UninstallString += ' /qn /norestart REMOVE=ALL'
+        $UninstallString += ' /S'
 Write-Host $uninstallString }
 Start-Process cmd.exe -wait -NoNewWindow -argumentlist "/c $uninstallstring"

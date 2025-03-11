@@ -1,0 +1,1 @@
+Get-Package -Name "Foxit PDF Reader" -AllVersions | Uninstall-Package -Force -ErrorAction SilentlyContinue
