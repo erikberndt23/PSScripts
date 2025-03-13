@@ -3,7 +3,7 @@ $arguments = @(
     "/ CM"
     "-search R"
     "-action INSTALL"
-    "-includeRebootPackages 1,3,4"
-    "-NoIcon"
+    "-includerebootpackages 1,3,4"
+    "-noicon"
 )
 start-process $path -ArgumentList $arguments
