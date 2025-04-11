@@ -1,1 +1,1 @@
-Get-CimInstance -ClassName Win32_UserProfile | ?{$_.LocalPath -like "*lcadmn2023*"} | Remove-CimInstance -Confirm:$false
+Get-CimInstance -ClassName Win32_UserProfile | Where-Object {$_.LocalPath -like "*<USERNAME>*"} | Remove-CimInstance -Confirm:$false
