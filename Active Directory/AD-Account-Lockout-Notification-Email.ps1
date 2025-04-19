@@ -9,7 +9,7 @@ $MailTo="erik.berndt@asti-usa.com"
 $EventID = Get-EventLog -LogName Security -InstanceId 4740 -Newest 1
 
 # Creates a variable which contains the contents of the lockout event log. This is used for the actual message in the email
-$MailBody= $EventID.Message + $EventID.TimeGenerated
+$MailBody= "$EventID.Message $EventID.TimeGenerated"
 
 # Creates an SMTP object and assigns an SMTP address
 $SmtpClient = New-Object system.net.mail.smtpClient
