@@ -2,8 +2,8 @@
 # To be run on a domain controller
 # Define message subject, sender, and recipient(s)
 $MailSubject= “ALERT: User Account locked out”
-$MailFrom="DC1@asti-usa.com"
-$MailTo="erik.berndt@asti-usa.com"
+$MailFrom="DC03@asti-usa.com"
+$MailTo="itdept@asti-usa.com"
 
 # Check the security event log for the most recent lockout event
 $EventID = Get-EventLog -LogName Security -InstanceId 4740 -Newest 1
