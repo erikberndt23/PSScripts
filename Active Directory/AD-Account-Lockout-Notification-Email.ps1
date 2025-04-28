@@ -2,14 +2,14 @@
 # To be run on a domain controller
 # Define message subject, sender, and recipient(s)
 $MailSubject= “ALERT: User Account locked out”
-$MailFrom="DC1@asti-usa.com"
-$MailTo="erik.berndt@asti-usa.com"
+$MailFrom="DC03@asti-usa.com"
+$MailTo="itdept@asti-usa.com"
 
 # Check the security event log for the most recent lockout event
 $EventID = Get-EventLog -LogName Security -InstanceId 4740 -Newest 1
 
 # Creates a variable which contains the contents of the lockout event log. This is used for the actual message in the email
-$MailBody= $EventID.Message + $EventID.TimeGenerated
+$MailBody= "$EventID.Message $EventID.TimeGenerated"
 
 # Creates an SMTP object and assigns an SMTP address
 $SmtpClient = New-Object system.net.mail.smtpClient
