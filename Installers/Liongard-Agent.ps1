@@ -7,6 +7,12 @@ $msiPath = "$env:temp\LiongardAgent-lts.msi"
 # Liongard agent installer URL
 $installerURL = "https://agents.static.liongard.com/LiongardAgent-lts.msi"
 
+# Liongard agent install parameters
+$url="us4.app.liongard.com"
+$key="cd02d19de727a81eb600"
+$secret="c519c59c6ff9daa2ae431d66c0f89d165ad7cacdb5bd7c40cc99cbf2a5dbffbf"
+$liongardenvironment="ASTI"
+
 # Download Liongard agent to temp folder
 Invoke-WebRequest -Uri $installerURL -OutFile $msiPath
 
@@ -16,16 +22,19 @@ if (!(Test-Path $msiPath)) {
 
 # Liongard agent install parameters
 $arguments = @(
-    "/i" , "`"$msiPath`""
+    "/i" , "$msiPath"
     "/qn"
     "/norestart"
-    "LIONGARDURL=us4.app.liongard.com"
-    "LIONGARDACCESSKEY=cd02d19de727a81eb600"
-    "LIONGARDACCESSSECRET=c519c59c6ff9daa2ae431d66c0f89d165ad7cacdb5bd7c40cc99cbf2a5dbffbf"
-    "LIONGARDENVIRONMENT=ASTI"
+    "/L*V $env:temp\liongard-agent-install.log"
+    "LIONGARDURL=$url"
+    "LIONGARDACCESSKEY=$key"
+    "LIONGARDACCESSSECRET=$secret"
+    "LIONGARDENVIRONMENT=$liongardenvironment"
+    "LIONGARDAGENTNAME=$env:computername"
 )
 
 # Install Liongard agent silently
+#Start-Process -FilePath "msiexec.exe" -ArgumentList $arguments -Wait -NoNewWindow
 Start-Process -FilePath "msiexec.exe" -ArgumentList $arguments -Wait -NoNewWindow
 
 # Check if Liongard installed successfully
