@@ -11,7 +11,7 @@ if ($app.Name -contains "Acronis True Image") {
     Write-Host "Acronis True Image is installed - removing backup schedule!"
 
 # Download Acronis Schedule Manager
-Invoke-WebRequest -Url $downloadUrl -outFile $downloadLocation/schedmgr.exe
+Invoke-WebRequest -Uri $downloadUrl -outFile $downloadLocation/schedmgr.exe
 
 # Run Schedule Manager and disable all backup jobs
 Start-Process -FilePath $schedTool -ArgumentList $schedArgs
