@@ -10,7 +10,7 @@ $schedArgs = @(
 if ($app.Name -contains "Acronis True Image") {
     Write-Host "Acronis True Image is installed - removing backup schedule!"
 
-if (Test-Path -Path $schedManager) {
+else if (Test-Path -Path $schedManager) {
     Write-Host "Scheduling tool exists."
 
 Start-Process -FilePath $schedManager -ArgumentList $schedArgs
