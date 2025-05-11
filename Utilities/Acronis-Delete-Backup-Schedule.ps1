@@ -6,13 +6,22 @@ $schedManager = "C:\Program Files (x86)\Acronis\BackupAndRecovery\schedmgr.exe"
 $schedArgs = @(
     "task zap"
 )
-
 # Check if Acronis True Image is Installed
 if ($app.Name -contains "Acronis True Image") {
     Write-Host "Acronis True Image is installed - removing backup schedule!"
 
+if (Test-Path -Path $schedManager) {
+    Write-Host "Scheduling tool exists."
+
+Start-Process -FilePath $schedManager -ArgumentList $schedArgs
+}
+
+else {
+
+Write-Host "scheduling tool does not exist."
 # Download Acronis Schedule Manager
 Invoke-WebRequest -Uri $downloadUrl -outFile $downloadLocation\schedmgr.exe
+}
 
 # Run Schedule Manager and disable all backup jobs
 Start-Process -FilePath $schedTool -ArgumentList $schedArgs
