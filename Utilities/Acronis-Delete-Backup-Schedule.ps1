@@ -2,6 +2,7 @@ $app = Get-Package -Name "*Acronis True Image*"
 $downloadUrl = https://acronis.file.force.com/sfc/dist/version/download/?oid=00D300000000Zcb&ids=0681T00000OfiwU&d=%2Fa%2F1T000001CLaM%2F8B5s7QKcRagXdnK43bnex.L8MheUeRJg0aj0OOZC8sE&asPdf=false
 $downloadLocation = $env:temp
 $schedTool = "$downloadLocation\schedmgr.exe"
+$schedManager = "C:\Program Files (x86)\Acronis\BackupAndRecovery\schedmgr.exe"
 $schedArgs = @(
     "task zap"
 )
