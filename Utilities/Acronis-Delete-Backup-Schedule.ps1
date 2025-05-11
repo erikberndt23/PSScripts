@@ -16,7 +16,7 @@ if (Test-Path -Path $schedManager) {
 Start-Process -FilePath $schedManager -ArgumentList $schedArgs
 }
 
-else {
+else if {
 
 Write-Host "scheduling tool does not exist."
 # Download Acronis Schedule Manager
@@ -26,7 +26,7 @@ Invoke-WebRequest -Uri $downloadUrl -outFile $downloadLocation\schedmgr.exe
 # Run Schedule Manager and disable all backup jobs
 Start-Process -FilePath $schedTool -ArgumentList $schedArgs
 }
-Else {
+else {
     Write-Host "Acronis True Image is not installed - exiting script!"
     Exit 1
 }
