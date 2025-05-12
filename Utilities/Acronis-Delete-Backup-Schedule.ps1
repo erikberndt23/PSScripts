@@ -14,12 +14,13 @@ if ($app) {
     
     # Check if schedmgr.exe already exists
     if (Test-Path -Path $schedManager) {
-        Write-Host "Scheduling tool exists"
+        Write-Host "Scheduling tool exists. Removing backup jobs..."
         Start-Process -FilePath $schedManager -ArgumentList $schedArgs -Wait
     }
     else {
-        Write-Host "Scheduling tool not found. Downloading.."
+        Write-Host "Scheduling tool not found. Downloading..."
         Invoke-WebRequest -Uri $downloadUrl -OutFile $schedTool
+        Write-Host "Purging Acronis Backup Schedule"
         if (Test-Path -Path $schedTool) {
             Start-Process -FilePath $schedTool -ArgumentList $schedArgs -Wait
         }
