@@ -40,6 +40,8 @@ Get-appxprovisionedpackage -online | where-object {$_.packagename -like "*Phone*
 
 Get-appxprovisionedpackage -online | where-object {$_.packagename -like "*Weather*"} | remove-appxprovisionedpackage -Online -AllUsers
 
+Get-appxprovisionedpackage -online | where-object {$_.packagename -like "*QuickAssist*"} | remove-appxprovisionedpackage -Online -AllUsers
+
 Get-AppxPackage -AllUsers *MicrosoftSolitaireCollection* | Remove-AppxPackage -AllUsers
 
 Get-AppxPackage -AllUsers *MixedReality.Portal* | Remove-AppxPackage -AllUsers
