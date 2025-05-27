@@ -1,18 +1,11 @@
-# software to uninstall
+# Get the MSI GUID for OpenVPN
+$msi = (Get-Package | Where-Object { $_.Name -like "OpenVPN 2.*" }).FastPackageReference
 
-$software = "OpenVPN 2.*"
+# Uninstall the package using if the package was found
+if ($msi) {
+    Start-Process msiexec.exe -Wait -ArgumentList "/x $msi /qn /norestart"
+    Write-Host "OpenVPN successfully uninstalled!"
 
-# registry path to search
-
-$reg = 'HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall', 'HKLM:\SOFTWARE\Wow6432Node\Microsoft\Windows\CurrentVersion\Uninstall'
-
-# Query registry for uninstall strings for software to be uninstalled and uninstall it via CMD
-
-Get-ChildItem $reg |
-    Where-Object{ $_.GetValue('DisplayName') -like "$software" } |
-    ForEach-Object{
-        $uninstallString = $_.GetValue('UninstallString')
-        $UninstallString = "$UninstallString"
-        $UninstallString += ' /qn /norestart'
-Write-Host $uninstallString }
-Start-Process cmd.exe -wait -NoNewWindow -argumentlist "/c $uninstallstring"
+} else {
+    Write-Host "OpenVPN not found..."
+}
