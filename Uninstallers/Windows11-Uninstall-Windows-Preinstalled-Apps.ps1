@@ -46,6 +46,7 @@ try {
         if ($packageToRemove) {
             Write-Host "Removing $($packageToRemove.DisplayName)..."
             Remove-ProvisionedAppPackage -Online -AllUsers -PackageName $packageToRemove.PackageName
+            Remove-AppxPackage -AllUsers -PackageName $packageToRemove.PackageName
             Write-Host "Removed $($packageToRemove.DisplayName) successfully."
         } else {
             Write-Host "Package '$displayName' not found. Skipping removal."
