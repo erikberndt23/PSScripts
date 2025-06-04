@@ -4,6 +4,7 @@ $appList = @(
     "Microsoft.BingWeather",
     "Microsoft.BingSearch",
     "Windows.DevHome",
+    "Microsoft.WindowsFeedbackHub",
     "Microsoft.GamingApp",
     "Microsoft.GetHelp",
     "Microsoft.Getstarted",
@@ -28,13 +29,11 @@ $appList = @(
     "Microsoft.XboxIdentityProvider",
     "Microsoft.XboxSpeechToTextOverlay",
     "Microsoft.YourPhone",
-    "Microsoft.ZuneMusic",
-    "Microsoft.ZuneVideo",
     "Microsoft.Whiteboard",
-    "Microsoft.microsoftJournal",
+    "Microsoft.MicrosoftJournal",
     "MicrosoftCorporationII.QuickAssist",
     "Microsoft.ToDos",
-    "Microsoft.Family"
+    "MicrosoftCorporationII.MicrosoftFamily"
 )
 
 try {
@@ -46,7 +45,6 @@ try {
         if ($packageToRemove) {
             Write-Host "Removing $($packageToRemove.DisplayName)..."
             Remove-ProvisionedAppPackage -Online -AllUsers -PackageName $packageToRemove.PackageName
-            Remove-AppxPackage -AllUsers -PackageName $packageToRemove.PackageName
             Write-Host "Removed $($packageToRemove.DisplayName) successfully."
         } else {
             Write-Host "Package '$displayName' not found. Skipping removal."
