@@ -1,6 +1,6 @@
 # Set the username and password for locla admin account. Password will be overwritten by LAPS upon domain connectivity. 
 $lcadminUsername = "lcadmin"
-$lcadminPassword = ConvertTo-SecureString "***********************" -AsPlainText -Force
+$lcadminPassword = ConvertTo-SecureString "****************" -AsPlainText -Force
 
 # Check if lcadmin account already exists
 $lcadmin = Get-LocalUser -Name $lcadminUsername -ErrorAction SilentlyContinue
