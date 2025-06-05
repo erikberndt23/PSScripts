@@ -20,3 +20,8 @@ else {
 else {
     Write-Output "SentinelOne installation failed "
 }
+
+# Cleanup
+if (Test-Path $destinationFile) {
+    Remove-Item $destinationFile -Force
+}

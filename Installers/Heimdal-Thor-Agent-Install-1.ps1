@@ -1,4 +1,3 @@
-$siteToken = "*****************************"
 $sourceFile = "\\asti-usa.net\NETLOGON\Heimdal\HeimdalLatestVersion.msi"
 $destinationFile = "$env:temp\HeimdalLatestVersion.msi"
 
@@ -7,7 +6,6 @@ $arguments = @(
     "/i" , "$destinationFile"
     "/qn"
     "/norestart"
-    "heimdalkey=$siteToken"
 )
 
 # Check if Heimdal Thor Agent is already installed
@@ -27,4 +25,9 @@ else {
 }
 else {
     Write-Output "Heimdal Thor Agent installation failed "
+}
+
+# Cleanup
+if (Test-Path $destinationFile) {
+    Remove-Item $destinationFile -Force
 }
