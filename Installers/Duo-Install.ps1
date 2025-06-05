@@ -1,4 +1,4 @@
-# Define registry paths to check for Duo
+# Registry paths to check for Duo
 $reg = @(
     "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\*",
     "HKLM:\SOFTWARE\WOW6432Node\Microsoft\Windows\CurrentVersion\Uninstall\*"
@@ -20,7 +20,10 @@ $minimumVersion = [version]"14.40.33810"
 # VC++ Redist download URL and local path
 $installerURL = "https://aka.ms/vs/17/release/vc_redist.x64.exe"
 $installerPath = "$env:temp\vc_redist.x64.exe"
-$installerArgs = "/quiet", "/norestart"
+$installerArgs = @(
+"/quiet",
+"/norestart"
+)
 
 # Registry paths to check for installed Visual C++ Redistributables
 $vcPaths = @(
@@ -70,7 +73,7 @@ if ($meetsRequirement) {
 
 # Duo agent installer path and destination
 $installerLocation = "\\asti-usa.net\netlogon\duo\DuoWindowsLogon64.msi"
-$msiPath = "$env:TEMP\DuoWindowsLogon64.msi"
+$msiPath = "$env:temp\DuoWindowsLogon64.msi"
 
 # Download Duo installer
 Write-Output "Downloading Duo installer..."
