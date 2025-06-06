@@ -3,7 +3,7 @@ Import-Module ActiveDirectory
 # Configuration
 $DaysThreshold = 14
 $MailFrom = "noreply@asti-usa.com"
-$MailTo = "erik.berndt@asti-usa.com"
+$MailTo = "itdept@asti-usa.com"
 $MailSubject = "ASTi Domain Users with Passwords Expiring in the Next $DaysThreshold Days"
 $SMTPServer = "aspmx.l.google.com"
 
@@ -19,8 +19,11 @@ $ExpiringUsers = $Users | Where-Object {
     ([datetime]::FromFileTime($_."msDS-UserPasswordExpiryTimeComputed") -le $Today.AddDays($DaysThreshold))
 }
 
+# Count users with expiring passwords
+$countExpiringUsers = $ExpiringUsers.Count
+
 # Exit if there are no expiring passwords
-if (-not $ExpiringUsers -or $ExpiringUsers.Count -eq 0) {
+if (-not $countExpiringUsers -or $countExpiringUsers.Count -eq {}) {
     return
 }
 
