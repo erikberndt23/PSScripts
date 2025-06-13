@@ -9,7 +9,7 @@ $agentRegPath = Get-ChildItem -Path $reg | Get-ItemProperty | Where-Object { $_.
 
 if ($agentRegPath) {
     Write-Output "$($agentRegPath.DisplayName) is already installed. Exiting script."
-    Exit 1
+    Exit 0
 } else {
     Write-Host "Heimdal Thor agent not detected. Proceeding with installation..."
 }

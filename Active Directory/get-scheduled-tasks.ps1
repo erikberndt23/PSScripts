@@ -1,5 +1,5 @@
 $cred = Get-Credential 
-$comp = "ewa-computer-name" 
+$comp = "computer-name" 
 $session = New-PSSession -ComputerName $comp -Credential $cred 
 $script = { 
 "Services:"  

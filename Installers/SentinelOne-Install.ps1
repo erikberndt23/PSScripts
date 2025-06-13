@@ -7,6 +7,7 @@ if ($siteToken) {
         Write-Output "SentinelOneAgent is configured for this client, proceeding with app validation"
         if (Test-Path "C:\Program Files\SentinelOne\Sentinel Agent *\SentinelAgent.exe") {
         Write-Output "SentinelOne is currently installed. No further configuration needed."
+        exit 0
 } 
 
 # Silently install SentinelOne if not detected

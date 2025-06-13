@@ -13,6 +13,7 @@ if ($siteToken) {
         Write-Output "Heimdal is configured for this client, proceeding with app validation"
         if (Test-Path "C:\Program Files (x86)\Heimdal\Heimdal.ThorAgent.exe") {
         Write-Output "Heimdal is currently installed. No further configuration needed."
+        Exit 0
 } 
 
 # Silently install Heimdal Thor Agent if not detected
