@@ -1,4 +1,3 @@
-$lenovoSystemUpdate = Get-Package -Name "Lenovo System Update"
 $installerLocation = "C:\Users\erikb\Downloads\system_update_5.08.03.59.exe"
 $arguments = @(
     "/SP-"
@@ -7,11 +6,13 @@ $arguments = @(
     "/log"
 )
 
-if ($lenovoSystemUpdate.Name -Contains "Lenovo System Update") {
-Write-Output "Lenovo System Update is already installed - exiting"
-}
+# Check if Lenovo System Update is installed
+$lenovoSystemUpdate = Get-Package -Name "Lenovo System Update" -ErrorAction SilentlyContinue
 
+if ($lenovoSystemUpdate) {
+    Write-Output "Lenovo System Update is already installed - exiting"
+}
 else {
-Write-Host "Lenovo System Update is not installed - installing now"
-Start-Process $installerLocation -ArgumentList $Arguments
+    Write-Host "Lenovo System Update is not installed - installing now"
+    Start-Process -FilePath $installerLocation -ArgumentList $arguments -Wait
 }
