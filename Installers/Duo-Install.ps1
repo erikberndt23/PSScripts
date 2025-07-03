@@ -83,7 +83,7 @@ try {
     throw "Failed to download Duo installer: $_"
 }
 
-# Install Duo silently
+# Install Duo silently with no auto-push and fail open parameters
 $duoArguments = @(
 "/i", "`"$msiPath`"",
 "/qn",
