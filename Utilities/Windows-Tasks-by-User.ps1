@@ -1,1 +1,1 @@
-schtasks.exe /query /V /FO CSV | convertfrom-csv | where{$_.'Run as user' -match 'AccoutName'} | select taskname
+schtasks.exe /query /V /FO CSV | convertfrom-csv | Where-Object {$_.'Run as user' -match 'AccoutName'} | Select-Object taskname
