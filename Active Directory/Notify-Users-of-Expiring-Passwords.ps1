@@ -59,7 +59,7 @@ foreach ($user in $ExpiringUsers) {
 
 <hr>
 
-<p>🔒<strong>Security Reminder:</strong> The IT department will <u>never</u> ask you to reset your password through an emailed link. Please follow the directions above or visit the Intranet site for detailed instructions on resetting your password.</p>
+<p><strong>Security Reminder:</strong> The IT department will <u>never</u> ask you to reset your password through an emailed link. Please follow the directions above or visit the Intranet site for detailed instructions on resetting your password.</p>
 
 <p>If you have any questions or concerns, feel free to reach out.</p>
 
