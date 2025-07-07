@@ -5,75 +5,78 @@ $DaysThreshold = 14
 $MailFrom = "noreply@asti-usa.com"
 $SMTPServer = "aspmx.l.google.com"
 
-# Get the current date
 $Today = Get-Date
 
-# Get all enabled users with expiring passwords
+# Get users and include needed properties
 $Users = Get-ADUser -Filter {
-    Enabled -eq $true -and PasswordNeverExpires -eq $false -and PasswordLastSet -ne $null
-} -Properties DisplayName, SamAccountName, EmailAddress, mail, PasswordLastSet, PasswordNeverExpires, PasswordExpired, msDS-UserPasswordExpiryTimeComputed
+    Enabled -eq $true -and PasswordNeverExpires -eq $false
+} -Properties DisplayName, SamAccountName, EmailAddress, mail, givenName, PasswordLastSet, PasswordNeverExpires, PasswordExpired, msDS-UserPasswordExpiryTimeComputed
 
-# Filter users whose password is expiring within the threshold
+# Filter users with passwords expiring soon
 $ExpiringUsers = $Users | Where-Object {
     $_."msDS-UserPasswordExpiryTimeComputed" -ne $null -and
     ([datetime]::FromFileTime($_."msDS-UserPasswordExpiryTimeComputed") -le $Today.AddDays($DaysThreshold))
 }
 
-# Notify each user individually
 foreach ($user in $ExpiringUsers) {
     $email = $user.EmailAddress
-    if (-not $email) {
-        # Fallback to 'mail' attribute
-        $email = $user.mail
-    }
+    if (-not $email) { $email = "$user.mail" }
 
     if ($email) {
         $expiryDate = [datetime]::FromFileTime($user."msDS-UserPasswordExpiryTimeComputed")
+        $friendlyDate = $expiryDate.ToString("dddd, MMMM d, yyyy")
 
-        # Compose message
-        $MailSubject = "Your ASTi Domain Password Will Expire Soon"
+        $MailSubject = "Your ASTi Domain Password is Expiring Soon"
+
         $MailBody = @"
-Hello $($user.DisplayName),
+<html>
+<body style="font-family:Segoe UI, sans-serif; font-size:14px;">
+<p>Hi $($user.givenName),</p>
 
-This is a reminder that your ASTi domain password is set to expire on $expiryDate.
+<p>This is a friendly reminder that your <strong>ASTi domain password</strong> will expire on <strong>$friendlyDate</strong>.</p>
 
-Please change your password before this date to avoid any disruptions.
+<p>Please change your password before this date to avoid any disruptions.</p>
 
-IMPORTANT: Make sure you are connected to the ASTi network (on-site or via VPN) when changing your password!
+<p><strong>Important:</strong> Make sure you're connected to the internal ASTi network either on-site via Ethernet or through the VPN when changing your password.</p>
 
-Password Reset Instructions for Windows Users (on Domain-Joined Computers)
+<p>If you use Windows and Mac devices, please reset your password from your <strong>Macbook first</strong>.</p>
 
-1. Press Ctrl + Alt + Delete on your keyboard.
+<hr>
+<h3>Mac Devices: Password Reset Instructions</h3>
+<ol>
+<li>Go to <em>System Settings</em> > <em>Users &amp; Groups</em></li>
+<li>Click the "i" icon next to your account, then click <strong>Change Password</strong></li>
+<li>Follow the on-screen prompts and enter your current password, then then the new password twice</li>
+</ol>
 
-2. Click Change a password.
+<h3>Windows Devices: Password Reset Instructions</h3>
+<ol>
+<li>Press <kbd>Ctrl</kbd> + <kbd>Alt</kbd> + <kbd>Delete</kbd></li>
+<li>Select <strong>Change a password</strong></li>
+<li>Enter your current password, then the new password twice</li>
+<li>Click <strong>OK</strong> to confirm</li>
+</ol>
 
-3. Enter your current password, then your new password twice.
+<hr>
 
-4. Click OK. You will see a confirmation if the change is successful
+<p>🔒<strong>Security Reminder:</strong> The IT department will <u>never</u> ask you to reset your password through an emailed link. Please follow the directions above or visit the Intranet site for detailed instructions on resetting your password.</p>
 
-Password Reset Instructions for Mac Users (on Domain-Joined Computers)
+<p>If you have any questions or concerns, feel free to reach out.</p>
 
-1. Go to System Settings or System Preferences > Users & Groups.
-
-2. Select your account and click Change Password.
-
-3. Follow the prompts to enter your old and new password.
-
-As a reminder, the IT department will never ask you to reset your password through a link. Please follow the directions above or contact the IT department if you have any questions or concerns.
-
-Thank you,
-
-ASTi IT Department
+<p>Thank you,<br>ASTi IT Department</p>
+</body>
+</html>
 "@
 
-        # Create and send the email
         $MailMessage = New-Object System.Net.Mail.MailMessage
         $MailMessage.From = $MailFrom
         $MailMessage.To.Add($email)
         $MailMessage.Subject = $MailSubject
         $MailMessage.Body = $MailBody
+        $MailMessage.IsBodyHtml = $true
 
         $SMTP = New-Object Net.Mail.SmtpClient($SMTPServer)
+
         try {
             $SMTP.Send($MailMessage)
             Write-Output "Sent expiration notice to $($user.SamAccountName) <$email>"
