@@ -25,7 +25,7 @@ foreach ($user in $ExpiringUsers) {
         $expiryDate = [datetime]::FromFileTime($user."msDS-UserPasswordExpiryTimeComputed")
         $friendlyDate = $expiryDate.ToString("dddd, MMMM d, yyyy")
 
-        $MailSubject = "Your ASTi Domain Password is Expiring Soon"
+        $MailSubject = "[Action Required] Your ASTi Domain Password is Expiring Soon"
 
         $MailBody = @"
 <html>
