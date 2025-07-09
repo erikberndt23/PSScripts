@@ -4,6 +4,7 @@ Import-Module ActiveDirectory
 $DaysThreshold = 14
 $MailFrom = "noreply@asti-usa.com"
 $MailReplyTo = "itdept@asti-usa.com"
+$MailBCC = "erik.berndt@asti-usa.com"
 $SMTPServer = "aspmx.l.google.com"
 $Today = Get-Date
 
@@ -84,6 +85,7 @@ ASTi IT Department</p>
         $MailMessage.From = $MailFrom
         $MailMessage.To.Add($email)
         $MailMessage.ReplyTo = $MailReplyTo
+        $MailMessage.Bcc = $MailBCC
         $MailMessage.Subject = $MailSubject
         $MailMessage.Body = $MailBody
         $MailMessage.IsBodyHtml = $true
