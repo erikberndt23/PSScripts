@@ -1,9 +1,13 @@
 # ========= Downloading FortiClient VPN Installer =========
 # Define registry paths to check for installed Forticlient VPN
+
 $reg = @(
     "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\*",
     "HKLM:\SOFTWARE\WOW6432Node\Microsoft\Windows\CurrentVersion\Uninstall\*"
 )
+
+# Enforce TLS 1.3 for downloads
+[Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls13
 
 # Check if Forticlient VPN is already installed before proceeding
 $agentRegPath = Get-ChildItem -Path $reg | Get-ItemProperty | Where-Object { $_.DisplayName -eq "Forticlient VPN" } -ErrorAction SilentlyContinue
@@ -50,7 +54,7 @@ if ($agentRegPost) {
 
 # ========= FortiClient VPN Registry Import =========
 # Variables
-$regFileUrl = "https://isos.asti-usa.com/ITDept/Forticlient%20VPN/forticlient-IPSec-vpn-tunnel.reg"  # Update to your actual URL
+$regFileUrl = "https://isos.asti-usa.com/ITDept/Forticlient%20VPN/forticlient-IPSec-vpn-tunnel.reg"
 $tempRegPath = "$env:TEMP\forticlient-IPSec-vpn-tunnel.reg"
 
 # Download the .reg file
