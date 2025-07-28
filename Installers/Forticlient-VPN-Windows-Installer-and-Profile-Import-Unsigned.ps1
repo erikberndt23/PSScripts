@@ -1,4 +1,18 @@
 # ========= Downloading FortiClient VPN Installer =========
+
+# Check that script is running as administrator
+
+$currentPrincipal = New-Object Security.Principal.WindowsPrincipal([Security.Principal.WindowsIdentity]::GetCurrent())
+$isAdmin = $currentPrincipal.IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)
+
+if ($isAdmin) {
+    Write-Host "PowerShell is running as administrator."
+} else {
+    Write-Host "PowerShell is NOT running as administrator. Exiting script...Please re-run as administrator."
+    Start-Sleep 5
+    Exit 
+}
+
 # Define registry paths to check for installed Forticlient VPN
 
 $reg = @(
