@@ -1,18 +1,16 @@
-# software to be uninstalled
-
+# Software to be uninstalled
 $software = "*<APP_NAME>*"
 
-# registry path to search for installed software
-
+# Registry paths to search for installed software
 $registryPaths = @(
-'HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall',
- 'HKLM:\SOFTWARE\Wow6432Node\Microsoft\Windows\CurrentVersion\Uninstall'
+    'HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall',
+    'HKLM:\SOFTWARE\Wow6432Node\Microsoft\Windows\CurrentVersion\Uninstall'
 )
-# Query registry for uninstall strings for software to be uninstalled and uninstall it via CMD with generic/default silent strings
 
+# Query registry for uninstall strings and execute them silently
 foreach ($regPath in $registryPaths) {
     Get-ChildItem -Path $regPath -ErrorAction SilentlyContinue | ForEach-Object {
-        $displayName = $_.GetValue("DisplayName") 
+        $displayName = $_.GetValue("DisplayName")
         if ($displayName -like $software) {
             $uninstallString = $_.GetValue("UninstallString")
 
@@ -20,13 +18,11 @@ foreach ($regPath in $registryPaths) {
                 Write-Host "Found: $displayName"
                 Write-Host "Uninstall String: $uninstallString"
 
-                # Normalize quotes (if needed)
-                if ($uninstallString -match '^"') {
-                    $uninstallString = "$uninstallString /SP- /verysilent"
-                } elseif ($uninstallString -like "*msiexec*") {
+                # Add generic silent flags
+                if ($uninstallString -like "*msiexec*") {
                     $uninstallString += " /quiet /norestart"
                 } else {
-                    $uninstallString = "`"$uninstallString`" /quiet /norestart"
+                    $uninstallString += " /SP- /verysilent"
                 }
 
                 # Execute the uninstall command
