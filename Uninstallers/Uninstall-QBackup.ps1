@@ -13,6 +13,6 @@ Get-ChildItem $reg |
     ForEach-Object{
         $uninstallString = $_.GetValue('UninstallString')
         $UninstallString = "$UninstallString"
-        $UninstallString += ' /SILENT'
+        $UninstallString += ' /VERYSILENT',' /SP-'
 Write-Host $uninstallString }
 Start-Process cmd.exe -wait -NoNewWindow -argumentlist "/c $uninstallstring"
