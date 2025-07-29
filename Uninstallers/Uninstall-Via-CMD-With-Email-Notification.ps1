@@ -2,21 +2,20 @@
 
 $software = "qBackup"
 
-# Registry paths to search
+# Registry paths to search for software
 
 $registryPaths = @(
     'HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall',
     'HKLM:\SOFTWARE\Wow6432Node\Microsoft\Windows\CurrentVersion\Uninstall'
 )
 
-# Email configuration
+# Email server configuration
 
 $smtpServer = "aspmx.l.google.com"
 $mailFrom = "noreply@asti.usa.com"
-$mailTo = "erik.berndt@asti-usa.com"
+$mailTo = "itdept@asti-usa.com"
 $hostName = $env:COMPUTERNAME
-$currentUser = $env:USERNAME
-$subject = "Successfully Uninstalled $software on $hostname for $currentUser"
+$subject = "Successfully Uninstalled $software on $hostname"
 $messageBody = ""
 
 # Uninstall checks
@@ -24,7 +23,7 @@ $messageBody = ""
 $found = $false
 $uninstalled = $false
 
-# Scan and uninstall
+# Scan and uninstall software
 
 foreach ($regPath in $registryPaths) {
     Get-ChildItem -Path $regPath -ErrorAction SilentlyContinue | ForEach-Object {
@@ -44,25 +43,26 @@ foreach ($regPath in $registryPaths) {
                     $uninstallString += " /SP- /verysilent"
                 }
 
-                # Attempt uninstall
+                # Uninstall software
+
                 try {
                     Start-Process -FilePath "cmd.exe" -ArgumentList "/c $uninstallString" -NoNewWindow -Wait
                     $uninstalled = $true
-                    $messageBody += "Status: $software uninstalled successfuly on $hostName for $currentUser.`n`n"
+                    $messageBody += "Status: $software uninstalled successfuly on $hostName.`n`n"
                 } catch { 
-                    $messageBody += "Status: $software uninstall FAILED on $hostName for $currentUser. $_`n`n"
+                    $messageBody += "Status: $software uninstall FAILED on $hostName. $_`n`n"
                 }
             }
         }
     }
 }
 
-# Exit script if not found
+# Exit script silently if not found
 
 if (-not $found) {
     Exit 0
 }
 
-# Send email
+# Send email message if software located and uninstalled/failed
 
 Send-MailMessage -From $mailFrom -To $mailTo -Subject $subject -Body $messageBody -SmtpServer $smtpServer
