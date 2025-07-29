@@ -3,7 +3,7 @@ $biosUUID = (Get-WmiObject -Class Win32_ComputerSystemProduct).UUID
 
 # Define the registry path and value name
 $regPath = "HKLM:\SOFTWARE\Veeam\Veeam Backup and Replication"
-$valueName = "bios_uuid"
+$valueName = "custom_BIOS_UUID"
 
 # Create the key if it doesn't exist
 if (-not (Test-Path $regPath)) {

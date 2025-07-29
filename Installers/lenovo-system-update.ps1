@@ -1,4 +1,4 @@
-$installerLocation = "C:\Users\erikb\Downloads\system_update_5.08.03.59.exe"
+$installerLocation = "C:\PATH\TO\system_update_5.08.03.59.exe"
 $arguments = @(
     "/SP-"
     "/verysilent"
