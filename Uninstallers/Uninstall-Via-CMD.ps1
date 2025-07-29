@@ -36,7 +36,6 @@ foreach ($regPath in $registryPaths) {
 }
 
 # Exit script if software not found
-
 if (-not $found) {
     Write-Host "No matching software found for pattern: $software. Exiting script."
     exit 0
