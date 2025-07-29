@@ -7,6 +7,9 @@ $registryPaths = @(
     'HKLM:\SOFTWARE\Wow6432Node\Microsoft\Windows\CurrentVersion\Uninstall'
 )
 
+# Track if software was located
+$found = $false
+
 # Query registry for uninstall strings and execute them silently
 foreach ($regPath in $registryPaths) {
     Get-ChildItem -Path $regPath -ErrorAction SilentlyContinue | ForEach-Object {
@@ -18,7 +21,7 @@ foreach ($regPath in $registryPaths) {
                 Write-Host "Found: $displayName"
                 Write-Host "Uninstall String: $uninstallString"
 
-                # Add generic silent flags
+                # Add generic silent flags depending on installer format
                 if ($uninstallString -like "*msiexec*") {
                     $uninstallString += " /quiet /norestart"
                 } else {
@@ -30,4 +33,11 @@ foreach ($regPath in $registryPaths) {
             }
         }
     }
+}
+
+# Exit script if software not found
+
+if (-not $found) {
+    Write-Host "No matching software found for pattern: $software. Exiting script."
+    exit 0
 }
