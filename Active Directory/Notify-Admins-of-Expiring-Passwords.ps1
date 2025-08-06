@@ -11,7 +11,7 @@ $SMTPServer = "aspmx.l.google.com"
 $Today = Get-Date
 
 # Get all enabled users with non-expired passwords
-$Users = Get-ADUser -Filter {Enabled -eq $true -and PasswordNeverExpires -eq $false -and PasswordLastSet -ne $null} -Properties DisplayName, SamAccountName, PasswordLastSet, PasswordNeverExpires, PasswordExpired, msDS-UserPasswordExpiryTimeComputed
+$Users = Get-ADUser -Filter {Enabled -eq $true -and PasswordNeverExpires -eq $false} -Properties DisplayName, SamAccountName, PasswordLastSet, PasswordNeverExpires, PasswordExpired, msDS-UserPasswordExpiryTimeComputed
 
 # Filter users whose password is expiring within the threshold
 $ExpiringUsers = $Users | Where-Object {
