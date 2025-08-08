@@ -1,18 +1,61 @@
-# software to uninstall
+# Software to be uninstalled
+$software = "qBackup"
 
-$software = "*QBackup*"
+# Registry paths to search for installed software
+$registryPaths = @(
+    'HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall',
+    'HKLM:\SOFTWARE\Wow6432Node\Microsoft\Windows\CurrentVersion\Uninstall'
+)
 
-# registry path to search
+# Track if software was located
+$found = $false
 
-$reg = 'HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall', 'HKLM:\SOFTWARE\Wow6432Node\Microsoft\Windows\CurrentVersion\Uninstall'
+# Query registry for uninstall strings and execute them silently
+foreach ($regPath in $registryPaths) {
+    Get-ChildItem -Path $regPath -ErrorAction SilentlyContinue | ForEach-Object {
+        $displayName = $_.GetValue("DisplayName")
+        if ($displayName -like "*$software*") {
+            $found = $true
+            $uninstallString = $_.GetValue("UninstallString")
 
-# Query registry for uninstall strings for software to be uninstalled and uninstall it via CMD
+            if ($uninstallString) {
+                Write-Host "Found: $displayName"
+                Write-Host "Uninstall String: $uninstallString"
 
-Get-ChildItem $reg |
-    Where-Object{ $_.GetValue('DisplayName') -like "$software" } |
-    ForEach-Object{
-        $uninstallString = $_.GetValue('UninstallString')
-        $UninstallString = "$UninstallString"
-        $UninstallString += ' /VERYSILENT',' /SP-'
-Write-Host $uninstallString }
-Start-Process cmd.exe -wait -NoNewWindow -argumentlist "/c $uninstallstring"
+                # Add generic silent flags depending on installer format
+                if ($uninstallString -like "*msiexec*") {
+                    $uninstallString += " /quiet /norestart"
+                } else {
+                    $uninstallString += " /SP- /verysilent"
+                }
+
+                # Execute the uninstall command
+                Start-Process -FilePath "cmd.exe" -ArgumentList "/c $uninstallString" -NoNewWindow -Wait
+            }
+        }
+    }
+}
+
+# Exit script if software not found
+if (-not $found) {
+    Write-Host "No matching software found for pattern: $software. Exiting script."
+    exit 0
+}
+
+# Post-uninstall check
+Start-Sleep -Seconds 5
+
+$stillPresent = $false
+foreach ($regPath in $registryPaths) {
+    Get-ChildItem -Path $regPath -ErrorAction SilentlyContinue | ForEach-Object {
+        if ($_.GetValue("DisplayName") -like "*$software*") {
+            $stillPresent = $true
+        }
+    }
+}
+
+if ($stillPresent) {
+    Write-Host "WARNING: $software is still installed."
+} else {
+    Write-Host "$software successfully uninstalled."
+}
