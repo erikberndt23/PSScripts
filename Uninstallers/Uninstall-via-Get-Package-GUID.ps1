@@ -6,7 +6,7 @@ $softwareName = "<software_name>"
 
 $msi = (Get-Package -ErrorAction SilentlyContinue | Where-Object { $_.Name -like "*$softwareName*" }).FastPackageReference
 
-# Uninstall the package using if the package was found
+# Uninstall the package silently if application is installed
 
 if ($msi) {
     Write-Host "$softwareName is installed. Uninstalling now..."
