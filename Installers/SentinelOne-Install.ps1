@@ -1,6 +1,6 @@
 $siteToken = "***************************************************************************************"
-$sourceFile = "\\asti-usa.net\NETLOGON\SentinelOne\SentinelOneInstaller_windows_64bit_v24_2_3_471.exe"
-$destinationFile = "$env:temp\SentinelOneInstaller_windows_64bit_v24_2_3_471.exe"
+$sourceFile = "\\asti-usa.net\NETLOGON\SentinelOne\SentinelOneInstaller_windows_64bit_v25_1_3_334.exe"
+$destinationFile = "$env:temp\SentinelOneInstaller_windows_64bit_v25_1_3_334.exe"
 
 # Check if SentinelOne is already installed
 if ($siteToken) {
