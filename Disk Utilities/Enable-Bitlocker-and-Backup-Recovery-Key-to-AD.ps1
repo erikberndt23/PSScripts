@@ -25,7 +25,11 @@ if ($vol.ProtectionStatus -eq "Off") {
 
     # Backup the recovery key to Active Directory
 
-    Backup-BitLockerKeyProtector -MountPoint $Drive -KeyProtectorId $protector.KeyProtectorId
+   Get-BitLockerVolume | ForEach-Object {
+    $mount = $_.MountPoint
+    $_.KeyProtector | Where-Object KeyProtectorType -eq 'RecoveryPassword' |
+        ForEach-Object { Backup-BitLockerKeyProtector -MountPoint $mount -KeyProtectorId $_.KeyProtectorId }
+}
 
     Write-Host "BitLocker enabled on $Drive with recovery password backed up to AD."
 }
