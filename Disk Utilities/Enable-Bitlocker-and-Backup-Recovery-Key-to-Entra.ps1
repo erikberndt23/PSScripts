@@ -9,4 +9,4 @@ Enable-BitLocker C: -tpmProtector -UsedSpaceOnly
 manage-bde -protectors -enable C:
 
 # Backup Bitlocker recovery key to Entra
-BackupToAAD-BitLockerKeyProtector -MountPoint $env:SystemDrive -KeyProtectorId ((Get-BitLockerVolume -MountPoint $env:SystemDrive ).KeyProtector | where {$_.KeyProtectorType -eq "RecoveryPassword" }).KeyProtectorId -WhatIf
+BackupToAAD-BitLockerKeyProtector -MountPoint $env:SystemDrive -KeyProtectorId ((Get-BitLockerVolume -MountPoint $env:SystemDrive ).KeyProtector | where {$_.KeyProtectorType -eq "RecoveryPassword" }).KeyProtectorId
