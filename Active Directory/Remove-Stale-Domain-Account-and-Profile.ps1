@@ -27,6 +27,7 @@ if (Test-Path -Path $profilePath) {
     Write-Host "$profilePath folder removed"
 } else {
     Write-Host "User profile folder $profilePath does not exist."
+    Exit 1
 }
 
 Write-Host "Domain account for $domainUser has been removed from local machine."
