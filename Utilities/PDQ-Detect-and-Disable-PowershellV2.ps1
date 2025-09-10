@@ -3,6 +3,7 @@
 Write-Host "Checking if Windows PowerShell 2.0 is installed..."
 
 # Get PowerShell 2.0 feature status
+
 $feature = Get-WindowsOptionalFeature -Online -FeatureName MicrosoftWindowsPowerShellV2Root -ErrorAction SilentlyContinue
 
 if ($null -eq $feature) {
