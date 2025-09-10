@@ -39,7 +39,7 @@ foreach ($user in $ExpiringUsers) {
 
 <p><strong>Important:</strong> Make sure you're connected to the internal ASTi network on-site via Ethernet cable (<strong>not on WiFi</strong>) or through the VPN when changing your password.</p>
 
-<p>If you use both Windows and Mac devices, please <strong>reset your password from your MacBook first</strong>.</p>
+<p>If you use both Windows and Mac devices,<strong> please reset your password from your Mac</strong>.</p>
 
 <h3>ASTi Password Requirements</h3>
 <ul>
@@ -47,11 +47,19 @@ foreach ($user in $ExpiringUsers) {
   <li>Must include <strong>uppercase & lowercase letters, numbers,</strong> and <strong>special characters</strong></li>
   <li>Cannot reuse any of your previous <strong>24 passwords</strong></li>
   <li>Password must be changed every <strong>90 days</strong></li>
+  <li> Should not contain your username or any part of your full name</li>
 </ul>
 
 <hr style="border:none; border-top:1px solid #ccc;">
 
 <h3>Mac: Password Reset Instructions</h3>
+<h4>*Jamf Enrolled Devices Only</h4>
+<ol>
+<li>Click the <strong>Jamf Self Service</strong> icon in your dock or search for it using Spotlight (Cmd + Space)</li>
+<li> Click <strong>Change Password</strong> and enter your current password and new password twice</li>
+<li>Click <strong>Change Password</strong> to confirm</li>
+</ol>
+<h4>*Non-Jamf Enrolled Devices</h4>
 <ol>
   <li>Go to <em>System Settings</em> > <em>Users &amp; Groups</em></li>
   <li>Click the <strong>"i"</strong> icon next to your account, then click <strong>Change Password</strong></li>
@@ -79,7 +87,6 @@ ASTi IT Department</p>
 </body>
 </html>
 "@
-
         $MailMessage = New-Object System.Net.Mail.MailMessage
         $MailMessage.From = $MailFrom
         $MailMessage.To.Add($email)
