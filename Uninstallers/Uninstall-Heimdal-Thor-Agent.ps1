@@ -2,6 +2,11 @@
 
 $softwareName = "Heimdal Thor Agent"
 $uninstallPassword = "*************"
+
+# Get the MSI GUID for application to be uninstalled
+
+$msi = (Get-Package -ErrorAction SilentlyContinue | Where-Object { $_.Name -like "$softwareName" }).FastPackageReference
+
 $arguments = @(
     "/x", "$msi",
     "/qn",
@@ -9,25 +14,21 @@ $arguments = @(
     "uninstallPassword=$uninstallPassword"
 )
 
-# Get the MSI GUID for application to be uninstalled
-
-$msi = (Get-Package -ErrorAction SilentlyContinue | Where-Object { $_.Name -like "$softwareName" }).FastPackageReference
-
 # Uninstall the package silently if application is installed
 
 if ($msi) {
-    Write-Host "$softwareName is installed. Uninstalling now..."
-    Start-Process -FilePath msiexec.exe -ArgumentList $arguments -Wait -NoNewWindow
-    Write-Host "$softwareName successfully uninstalled!"
+    Write-Output "$softwareName is installed. Uninstalling now..."
+    Start-Process -FilePath msiexec.exe -ArgumentList $arguments -PassThru -Wait -NoNewWindow
+    Write-Output "$softwareName successfully uninstalled!"
 
 # Post uninstall check
 
 $stillInstalled = Get-Package -ErrorAction SilentlyContinue | Where-Object { $_.Name -like "*$softwareName*" }
 
 if ($stillInstalled) {
-    Write-Host "$softwareName is still installed..."
+    Write-Output "$softwareName is still installed..."
 }
 
 } else {
-    Write-Host "$softwareName not found...Exiting script!"
+    Write-Output "$softwareName not found...Exiting script!"
 }
