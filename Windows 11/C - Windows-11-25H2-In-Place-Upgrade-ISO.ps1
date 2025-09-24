@@ -4,7 +4,7 @@ New-Item -ItemType Directory -Path $dir -Force | Out-Null
 # Download Latest Windows 11 ISO
 $webClient = New-Object System.Net.WebClient
 $url = 'https://isos.asti-usa.com/ITDept/Windows%2011/Win11_25H2_English_x64.iso'
-$file = "$dir\Win11_2452_English_x64.iso"
+$file = "$dir\Win11_25H2_English_x64.iso"
 $webClient.DownloadFile($url, $file)
 
 # Suspend BitLocker
