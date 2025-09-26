@@ -55,8 +55,9 @@ foreach ($user in $ExpiringUsers) {
 <h3>Mac: Password Reset Instructions</h3>
 <h4>*Jamf Enrolled Devices Only</h4>
 <ol>
-<li>Click the <strong>Jamf Self Service</strong> icon in your dock or search for it using Spotlight (Cmd + Space)</li>
-<li> Click <strong>Change Password</strong> and enter your current password and new password twice</li>
+<li>Click the <strong>key shaped icon</strong> on your top menu bar and choose <strong>Sign In</strong></li>
+<li>Sign in with your current ASTi username and password. Usernames are in the format of <em>first name + the first letter of your last name</em> i.e. John Smith -> johns</li>
+<li> Click <strong>Change Password</strong> and enter your old password and your new password twice</li>
 <li>Click <strong>Change Password</strong> to confirm</li>
 </ol>
 <h4>*Non-Jamf Enrolled Devices</h4>

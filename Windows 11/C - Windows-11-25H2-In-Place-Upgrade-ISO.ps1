@@ -4,8 +4,8 @@ New-Item -ItemType Directory -Path $dir -Force | Out-Null
 # Paths
 
 $logFile   = Join-Path $dir "Upgrade.log"
-$isoFile   = "$dir\Win11_25H2_English_x64.iso"
-$logFolder = "$dir\Win11Logs"
+$isoFile   = Join-Path $dir "Win11_25H2_English_x64.iso"
+$logFolder = Join-Path $dir "Win11Logs"
 
 # Download Latest Windows 11 ISO
 
@@ -42,8 +42,8 @@ Write-Output "[$(Get-Date)] Starting Windows 11 upgrade from $setupPath" | Out-F
 
 # Run setup.exe silently
 
-$arguments = "/Auto Upgrade /Quiet /NoReboot /Eula Accept /DynamicUpdate Disable /Compat IgnoreWarning /CopyLogs $logFolder"
-$process = Start-Process -FilePath $setupPath -ArgumentList $arguments -Wait -PassThru
+$arguments = "/Auto Upgrade /Quiet /NoReboot /Eula Accept /DynamicUpdate Disable /CopyLogs `"$logFolder`""
+$process = Start-Process -FilePath "$setupPath" -ArgumentList $arguments -Wait -PassThru
 $exitCode = $process.ExitCode
 
 Write-Output "[$(Get-Date)] Setup exited with code $exitCode" | Out-File $logFile -Append
@@ -58,7 +58,7 @@ switch ($exitCode) {
     87          { Write-Output "[$(Get-Date)] Error: Invalid parameter passed to setup.exe." | Tee-Object -FilePath $logFile -Append }
     1603        { Write-Output "[$(Get-Date)] Error: Fatal error during installation." | Tee-Object -FilePath $logFile -Append }
     1639        { Write-Output "[$(Get-Date)] Error: Invalid command-line argument." | Tee-Object -FilePath $logFile -Append }
-    2147781575  { Write-Output "[$(Get-Date)] Error: Setup failed – generic failure." | Tee-Object -FilePath $logFile -Append }
+    2147781575  { Write-Output "[$(Get-Date)] Error: Setup failed � generic failure." | Tee-Object -FilePath $logFile -Append }
     Default     { Write-Output "[$(Get-Date)] Unknown exit code: $exitCode" | Tee-Object -FilePath $logFile -Append }
 }
 
