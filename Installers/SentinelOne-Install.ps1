@@ -1,0 +1,28 @@
+$siteToken = "***************************************************************************************"
+$sourceFile = "\\asti-usa.net\NETLOGON\SentinelOne\SentinelOneInstaller_windows_64bit_v25_1_3_334.exe"
+$destinationFile = "$env:temp\SentinelOneInstaller_windows_64bit_v25_1_3_334.exe"
+
+# Check if SentinelOne is already installed
+if ($siteToken) {
+        Write-Output "SentinelOneAgent is configured for this client, proceeding with app validation"
+        if (Test-Path "C:\Program Files\SentinelOne\Sentinel Agent *\SentinelAgent.exe") {
+        Write-Output "SentinelOne is currently installed. No further configuration needed."
+        exit 0
+} 
+
+# Silently install SentinelOne if not detected
+else {
+    Write-Output "SentinelOne is not installed. Proceeding with download and installation"
+    (New-Object System.Net.WebClient).DownloadFile($sourceFile,$destinationFile)
+    Write-Output "SentinelOne agent downloaded, proceeding with installation..."
+    & $destinationFile -t $siteToken --qn
+}
+}
+else {
+    Write-Output "SentinelOne installation failed "
+}
+
+# Cleanup
+if (Test-Path $destinationFile) {
+    Remove-Item $destinationFile -Force
+}

@@ -1,4 +1,4 @@
-$userName = "user2"
+$userName = "userAccount"
 $checkForUser = (Get-LocalUser).Name -Contains $userName
 
 if ($checkForUser -eq "$true") {
@@ -8,5 +8,4 @@ if ($checkForUser -eq "$true") {
     }
 else {
     Write-Host $username does not exist
-    }
-    
+}

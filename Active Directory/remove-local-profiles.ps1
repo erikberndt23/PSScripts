@@ -1,29 +1,28 @@
-﻿Remove local profiles
+﻿# Remove local profiles
+# Run as Administrator
+# Find User folder matched with their Registry SID <= use if folder is present in the files system
 
- 
+Get-WMIObject -class Win32_UserProfile | Format-List LocalPath, SID
 
-First step:
+# SID(S) to be removed
 
-Find User folder matched with their Registry SID <= use if folder is present in the files system
-
- 
-
-Get-WMIObject -class Win32_UserProfile | fl LocalPath, SID
-
- 
-
-Second step, remove the profile:
-
- 
-
-$SIDS = "S-1-5-21-902708724-930761740-538272213-6721","S-1-5-21-2902418489-567235417-802846432-1005","<each other SID>"
-
- 
-
+$SIDS = @(
+    "<SID to Remove>",
+    "<SID to Remove>"
+    # Add more SIDs as needed
+)
 foreach ($SID in $SIDS) {
-Get-WMIObject -class Win32_UserProfile | Where -Property SID -EQ $SID | Remove-WmiObject
+    
+ $userProfile = Get-WmiObject -Class Win32_UserProfile | Where-Object { $_.SID -eq $SID }
+
+    if ($userProfile) {
+        if (-not $userProfile.Loaded) {
+            Write-Host "Removing profile for SID: $SID (Path: $($userProfile.LocalPath))"
+            $userProfile | Remove-WmiObject
+        } else {
+            Write-Warning "Profile for SID $SID is currently loaded and cannot be removed."
+        }
+    } else {
+        Write-Warning "No profile found for SID: $SID"
+    }
 }
-
- 
-
-==================

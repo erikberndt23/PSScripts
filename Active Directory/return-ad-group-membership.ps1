@@ -6,7 +6,7 @@ $numRows =
 $allGroupsInfo | 
 foreach-object { $_.members | measure-object} | 
 Sort-Object count -Descending | Select-Object -First 1 |
-select -ExpandProperty count
+Select-Object -ExpandProperty count
 
 $emptyRowToAdd  = ";" * $numColSeparators + "`r`n"
 $emptyRowsToAdd = $emptyRowToAdd * $numRows

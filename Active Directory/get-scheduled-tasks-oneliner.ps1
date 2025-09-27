@@ -1,1 +1,1 @@
-Get-ScheduledTask -CimSession EWA-COMPUTERNAME | where { $_.Principal.userid -eq "EWACORP\username"}
+Get-ScheduledTask -CimSession EWA-COMPUTERNAME | Where-Object { $_.Principal.userid -eq "EWACORP\username"}

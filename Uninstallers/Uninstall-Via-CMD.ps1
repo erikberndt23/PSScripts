@@ -1,5 +1,5 @@
 # Software to be uninstalled
-$software = "qBackup"
+$software = "*<APP_NAME>*"
 
 # Registry paths to search for installed software
 $registryPaths = @(
@@ -14,8 +14,7 @@ $found = $false
 foreach ($regPath in $registryPaths) {
     Get-ChildItem -Path $regPath -ErrorAction SilentlyContinue | ForEach-Object {
         $displayName = $_.GetValue("DisplayName")
-        if ($displayName -like "*$software*") {
-            $found = $true
+        if ($displayName -like $software) {
             $uninstallString = $_.GetValue("UninstallString")
 
             if ($uninstallString) {
@@ -40,22 +39,4 @@ foreach ($regPath in $registryPaths) {
 if (-not $found) {
     Write-Host "No matching software found for pattern: $software. Exiting script."
     exit 0
-}
-
-# Post-uninstall check
-Start-Sleep -Seconds 5
-
-$stillPresent = $false
-foreach ($regPath in $registryPaths) {
-    Get-ChildItem -Path $regPath -ErrorAction SilentlyContinue | ForEach-Object {
-        if ($_.GetValue("DisplayName") -like "*$software*") {
-            $stillPresent = $true
-        }
-    }
-}
-
-if ($stillPresent) {
-    Write-Host "WARNING: $software is still installed."
-} else {
-    Write-Host "$software successfully uninstalled."
 }
