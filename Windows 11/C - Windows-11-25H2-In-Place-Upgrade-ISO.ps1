@@ -23,15 +23,6 @@ Remove-Item "C:\$WinREAgent" -Recurse -Force -ErrorAction SilentlyContinue
 Remove-Item $logFolder -Recurse -Force -ErrorAction SilentlyContinue
 New-Item -ItemType Directory -Path $logFolder -Force | Out-Null
 
-# Suspend BitLocker
-
-Write-Output "[$(Get-Date)] Suspending BitLocker" | Out-File $logFile -Append
-$bitlockerVolumes = Get-BitLockerVolume | Where-Object { $_.VolumeStatus -eq "FullyEncrypted" -and $_.LockStatus -eq "Unlocked" }
-foreach ($vol in $bitlockerVolumes) {
-    Suspend-BitLocker -MountPoint $vol.MountPoint -RebootCount 2
-    Write-Output "[$(Get-Date)] BitLocker suspended on $($vol.MountPoint)" | Out-File $logFile -Append
-}
-
 # Mount ISO
 
 $mountResult = Mount-DiskImage -ImagePath $isoFile -PassThru
@@ -42,7 +33,7 @@ Write-Output "[$(Get-Date)] Starting Windows 11 upgrade from $setupPath" | Out-F
 
 # Run setup.exe silently
 
-$arguments = "/Auto Upgrade /Quiet /NoReboot /Eula Accept /DynamicUpdate Disable /CopyLogs `"$logFolder`""
+$arguments = "/auto upgrade /bitlocker alwayssuspend /quiet /dynamicupdate disable /eula accept /copyLogs `"$logFolder`""
 $process = Start-Process -FilePath "$setupPath" -ArgumentList $arguments -Wait -PassThru
 $exitCode = $process.ExitCode
 
@@ -66,12 +57,4 @@ switch ($exitCode) {
 
 Dismount-DiskImage -ImagePath $isoFile
 
-# Resume BitLocker
-
-foreach ($vol in $bitlockerVolumes) {
-    Resume-BitLocker -MountPoint $vol.MountPoint
-    Write-Output "[$(Get-Date)] BitLocker resumed on $($vol.MountPoint)" | Out-File $logFile -Append
-}
-
 exit $exitCode
-# Note: A reboot may be required to complete the upgrade process.
