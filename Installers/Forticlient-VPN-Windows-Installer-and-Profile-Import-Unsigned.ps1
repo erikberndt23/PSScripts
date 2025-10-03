@@ -28,7 +28,7 @@ $agentRegPath = Get-ChildItem -Path $reg | Get-ItemProperty | Where-Object { $_.
 
 if ($agentRegPath) {
     Write-Output "$($agentRegPath.DisplayName) is already installed. Exiting script."
-    Exit 0
+    Exit 1
 } else {
     Write-Host "Forticlient VPN not detected. Proceeding with installation..."
 }
