@@ -19,7 +19,6 @@ $arguments = @(
 if ($msi) {
     Write-Output "$softwareName is installed. Uninstalling now..."
     Start-Process -FilePath msiexec.exe -ArgumentList $arguments -PassThru -Wait -NoNewWindow
-    Write-Output "$softwareName successfully uninstalled!"
 
 # Post uninstall check
 
@@ -30,5 +29,6 @@ if ($stillInstalled) {
 }
 
 } else {
+    Write-Output "$softwareName successfully uninstalled!"
     Write-Output "$softwareName not found...Exiting script!"
 }
