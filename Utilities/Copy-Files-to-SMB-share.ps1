@@ -1,12 +1,12 @@
 # Source and destination 
 
-$Source = "C:\ProgramData\Admin Arsenal\PDQ Inventory\Backups"
-$Destination = "\\qnap01-10g\pdq\config\inventory"
+$Source = "C:\ProgramData\Admin Arsenal\PDQ Deploy\Backups"
+$Destination = "\\qnap01-10g\pdq\config\deploy"
 
 # Credentials
 
-$Username = "pdq-admin"
-$Password = "Buffed-Chewable1-Celery-Planner-Obsessive-Saddlebag"
+$Username = ""
+$Password = ""
 
 # Convert password to a secure string
 
