@@ -1,5 +1,5 @@
 # Install location
-$installPath = $env:SystemDrive + "\WinAeroTweaker"
+$installPath = $env:SystemDrive + "\WinaeroTweaker"
 
 # Kill any running instances of WinAeroTweaker
 $processName = "WinAeroTweaker"
