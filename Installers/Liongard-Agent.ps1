@@ -8,10 +8,10 @@ $msiPath = "$env:temp\LiongardAgent-lts.msi"
 $installerURL = "https://agents.static.liongard.com/LiongardAgent-lts.msi"
 
 # Liongard agent install parameters
-$url="us4.app.liongard.com"
-$key="cd02d19de727a81eb600"
-$secret="c519c59c6ff9daa2ae431d66c0f89d165ad7cacdb5bd7c40cc99cbf2a5dbffbf"
-$liongardenvironment="ASTI"
+$url="<liongard_instance_url>"
+$key="<secret_key>"
+$secret="<access_secret>"
+$liongardenvironment="<liongard_environment_name>"
 
 # Download Liongard agent to temp folder
 Invoke-WebRequest -Uri $installerURL -OutFile $msiPath
