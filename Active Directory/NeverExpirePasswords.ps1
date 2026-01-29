@@ -1,0 +1,1 @@
+﻿Get-ADuser -searchbase "OU=Employees,OU=Users,OU=Corp,DC=asti-usa,DC=net" -Filter * | Set-ADuser -PasswordNeverExpires:$TRUE

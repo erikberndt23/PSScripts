@@ -90,7 +90,7 @@ if (!$suHelper) {
 
     # Silent install Service + System Update Helper
 
-    Start-Process -FilePath $vantageExe.FullName -ArgumentList "Install -SuHelper" -Wait -NoNewWindow
+    Start-Process -FilePath $vantageExe.FullName -ArgumentList "Install -Vantage" -Wait -NoNewWindow
 }
 
 # Locate System Update Helper
