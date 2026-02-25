@@ -20,6 +20,7 @@ $form.MinimizeBox = $false
 $form.BackColor = $BackgroundColor
 
 # Default result = Cancel (covers X + timeout)
+
 $form.Tag = "Cancel"
 
 # Header
