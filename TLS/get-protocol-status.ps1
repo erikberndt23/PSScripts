@@ -1,0 +1,1 @@
+﻿Get-ChildItem 'HKLM:\SYSTEM\CurrentControlSet\Control\SecurityProviders\SCHANNEL\Protocols' -Recurse | Get-ItemProperty | Select-Object @{N='Protocol';E={$_.PSPath.Split('\')[-2]}}, @{N='Side';E={$_.PSPath.Split('\')[-1]}}, Enabled, DisabledByDefault
