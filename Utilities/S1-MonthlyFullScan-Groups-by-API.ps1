@@ -6,14 +6,13 @@
 #
 # Groups can be specified by ID, by name, or a mix of both.
 # API token is retrieved at runtime from Windows Credential Manager.
+# Run Save-S1Token.ps1 once to store the token.
 #
 # Configuration: edit the CONFIG block below before deploying.
 # Logs are written to C:\logs\S1\s1_scan.log
-#
-# -----------------------------------------------------------------------
 
-# ------------Config begin-----------------------------------------------
-$S1BaseUrl    = "https://[UniqueDomain]}.sentinelone.net"
+# ── CONFIG ──────────────────────────────────────────────────────────────
+$S1BaseUrl    = "https://<UNIQ_DOMAIN>.sentinelone.net"
 
 # Windows Credential Manager target name (set by Save-S1Token.ps1)
 $S1CredTarget = "S1-MonthlyFullScan"
@@ -21,27 +20,30 @@ $S1CredTarget = "S1-MonthlyFullScan"
 # Groups to scan — specify by ID, by name, or a mix of both.
 # IDs are used as-is. Names are resolved to IDs at runtime via the API.
 $GroupIds     = @(
-    #"123456789101112131415",  # Example group ID (uncomment and replace with real IDs as needed)
+    #"12345678910"
 )
 $GroupNames   = @(
-    "Windows Servers",
-    "Windows Domain Controllers"
+    "<GROUP_NAME_1>",
+    "<GROUP_NAME_2>"
 )
 
-# Email config
-$EmailFrom    = "[your-email]@domain.com"
-$EmailTo      = @("[email-address1]@domain.com", "[email-address2]@domain.com", "[email-address3]@domain.com")
-$SmtpHost     = "smtp.domain.com"
-$SmtpPort     = 25
+# Email — Google SMTP relay (requires authentication)
+$EmailFrom       = "<EMAIL_ADDRESS>"
+$EmailTo         = @("<EMAIL_ADDRESS>", "<EMAIL_ADDRESS>", ""<EMAIL_ADDRESS>"")
+$SmtpHost        = "<SMTP_HOST>"
+$SmtpPort        = <SMTP_PORT>
+
 
 # Polling
 $PollIntervalSeconds = 60
 $TimeoutSeconds      = 7200
+# ── END CONFIG ───────────────────────────────────────────────────────────
 
+
+# -----------------------------------------------------------------------
 # Logging
+# -----------------------------------------------------------------------
 $LogFile = "C:\logs\S1\s1_scan.log"
-
-# ------------Config end-----------------------------------------------
 
 function Write-Log {
     param([string]$Level = "INFO", [string]$Message)
@@ -55,7 +57,10 @@ function Write-Log {
     }
 }
 
-# Windows Credential Manager retrieval
+
+# -----------------------------------------------------------------------
+# Windows Credential Manager retrieval (native AdvApi32 — no modules)
+# -----------------------------------------------------------------------
 Add-Type -TypeDefinition @'
 using System;
 using System.Runtime.InteropServices;
@@ -122,7 +127,9 @@ function Get-CredManagerSecret {
 }
 
 
+# -----------------------------------------------------------------------
 # S1 API helpers
+# -----------------------------------------------------------------------
 function Invoke-S1Api {
     param(
         [string]$Method,
@@ -239,7 +246,9 @@ function Get-ScanSummary {
 }
 
 
+# -----------------------------------------------------------------------
 # Polling
+# -----------------------------------------------------------------------
 function Wait-ForScanCompletion {
     param([string[]]$Ids, [hashtable]$Headers)
 
@@ -267,7 +276,9 @@ function Wait-ForScanCompletion {
 }
 
 
+# -----------------------------------------------------------------------
 # Report builder
+# -----------------------------------------------------------------------
 function Build-Report {
     param($GroupDisplayNames, $Affected, $Agents, $StartedAt, $FinishedAt)
 
@@ -317,14 +328,18 @@ Summary:
 
 Agent detail by group:
 $groupedSection
-* finished = last known status only. Agent was offline during scan.
+* finished = last known status only — agent was offline during this scan run.
 "@
 }
 
 
+# -----------------------------------------------------------------------
 # Email
+# -----------------------------------------------------------------------
 function Send-Email {
     param([string]$Subject, [string]$Body)
+
+    $smtpPass = Get-CredManagerSecret -Target "S1-MonthlyFullScan-Smtp"
 
     $msg              = New-Object Net.Mail.MailMessage
     $msg.From         = $script:EmailFrom
@@ -333,8 +348,9 @@ function Send-Email {
     $msg.Body         = $Body
 
     $smtp                       = New-Object Net.Mail.SmtpClient($script:SmtpHost, $script:SmtpPort)
-    $smtp.EnableSsl             = $false
+    $smtp.EnableSsl             = $true
     $smtp.UseDefaultCredentials = $false
+    Write-Log "INFO" "SMTP user: $($script:SmtpUser) | Password length: $($smtpPass.Length)"
     $smtp.Send($msg)
     Write-Log "INFO" "Email notification sent."
 }
@@ -346,11 +362,19 @@ function Send-Notification {
     }
     catch {
         Write-Log "ERROR" "Notification failed: $_"
+        if ($_.Exception.InnerException) {
+            Write-Log "ERROR" "Inner exception: $($_.Exception.InnerException.Message)"
+        }
+        if ($_.Exception.InnerException.InnerException) {
+            Write-Log "ERROR" "Root cause: $($_.Exception.InnerException.InnerException.Message)"
+        }
     }
 }
 
 
+# -----------------------------------------------------------------------
 # Main
+# -----------------------------------------------------------------------
 Write-Log "INFO" "=== SentinelOne Monthly Full Disk Scan starting ==="
 
 # 1. Load API token
@@ -397,7 +421,7 @@ if ($allGroupIds.Count -eq 0) {
     exit 1
 }
 
-# 3. Build display names list from the map
+# 3. Build display names list from the map — no second API call needed
 $groupDisplayNames = New-Object System.Collections.ArrayList
 foreach ($id in $allGroupIds) {
     [void]$groupDisplayNames.Add($groupIdToName[$id])
@@ -422,7 +446,7 @@ $finalAgents = Wait-ForScanCompletion -Ids $allGroupIds -Headers $headers
 $finishedAt  = [datetime]::UtcNow
 
 # 6. Build and send report
-# Get affected count from final agent list
+# Derive affected count from final agent list — more reliable than the API response field
 $finalSummary = Get-ScanSummary -Agents $finalAgents
 $affected     = $finalSummary.Finished + $finalSummary.Running + $finalSummary.Other
 $report = Build-Report `
