@@ -6,12 +6,13 @@ Add-Type -AssemblyName System.Drawing
 $TimeoutSeconds = 90
 $AccentColor     = [System.Drawing.ColorTranslator]::FromHtml("#3A61AA")
 $BackgroundColor = [System.Drawing.ColorTranslator]::FromHtml("#E7E9ED")
-
+$uptime = (Get-Date) - (gcim Win32_OperatingSystem).LastBootUpTime
+$uptimeStr = "{0}d {1}h {2}m" -f $uptime.Days, $uptime.Hours, $uptime.Minutes
 # Build Form
 
 $form = New-Object System.Windows.Forms.Form
 $form.Text = "Restart Required"
-$form.Size = New-Object System.Drawing.Size(560,300)
+$form.Size = New-Object System.Drawing.Size(560,330)
 $form.StartPosition = "CenterScreen"
 $form.TopMost = $true
 $form.FormBorderStyle = "FixedDialog"
@@ -20,7 +21,6 @@ $form.MinimizeBox = $false
 $form.BackColor = $BackgroundColor
 
 # Default result = Cancel (covers X + timeout)
-
 $form.Tag = "Cancel"
 
 # Header
@@ -42,8 +42,8 @@ $header.Controls.Add($headerLabel)
 # Message
 
 $label = New-Object System.Windows.Forms.Label
-$label.Text = "Updates and maintenance have completed.`r`n`r`nFor best performance and security, please restart your computer."
-$label.Size = New-Object System.Drawing.Size(460,80)
+$label.Text = "Updates and maintenance are complete.`r`n`r`nFor optimal performance and security, please restart your computer.`r`n`r`nCurrent uptime: $uptimeStr"
+$label.Size = New-Object System.Drawing.Size(460,110)
 $label.Location = New-Object System.Drawing.Point(25,65)
 $label.Font = New-Object System.Drawing.Font("Segoe UI",10)
 $form.Controls.Add($label)
@@ -53,7 +53,7 @@ $form.Controls.Add($label)
 $rebootBtn = New-Object System.Windows.Forms.Button
 $rebootBtn.Text = "Restart Now"
 $rebootBtn.Size = New-Object System.Drawing.Size(140,32)
-$rebootBtn.Location = New-Object System.Drawing.Point(120,150)
+$rebootBtn.Location = New-Object System.Drawing.Point(120,185)
 $rebootBtn.BackColor = $AccentColor
 $rebootBtn.ForeColor = "White"
 $rebootBtn.FlatStyle = "Flat"
@@ -68,7 +68,7 @@ $form.Controls.Add($rebootBtn)
 $cancelBtn = New-Object System.Windows.Forms.Button
 $cancelBtn.Text = "Cancel"
 $cancelBtn.Size = New-Object System.Drawing.Size(140,32)
-$cancelBtn.Location = New-Object System.Drawing.Point(280,150)
+$cancelBtn.Location = New-Object System.Drawing.Point(280,185)
 $cancelBtn.FlatStyle = "Flat"
 $cancelBtn.Add_Click({
     $form.Tag = "Cancel"
@@ -90,13 +90,13 @@ $footer.Text = @"
 ASTi IT Department
 "@
 
-$footer.Location = New-Object System.Drawing.Point(20,240)
+$footer.Location = New-Object System.Drawing.Point(20,270)
 $form.Controls.Add($footer)
 
 # Auto-close timer (Cancel)
 
 $timer = New-Object System.Windows.Forms.Timer
-$timer.Interval = $TimeoutSeconds * 1000
+$timer.Interval = $TimeoutSeconds * 2000
 $timer.Add_Tick({
     $timer.Stop()
     $form.Close()
