@@ -3,11 +3,12 @@ Add-Type -AssemblyName System.Drawing
 
 # Settings
 
-$TimeoutSeconds = 90
+$TimeoutSeconds = 300
 $AccentColor     = [System.Drawing.ColorTranslator]::FromHtml("#3A61AA")
 $BackgroundColor = [System.Drawing.ColorTranslator]::FromHtml("#E7E9ED")
 $uptime = (Get-Date) - (gcim Win32_OperatingSystem).LastBootUpTime
 $uptimeStr = "{0}d {1}h {2}m" -f $uptime.Days, $uptime.Hours, $uptime.Minutes
+$forceRebootMinutes = 240
 # Build Form
 
 $form = New-Object System.Windows.Forms.Form
@@ -42,7 +43,7 @@ $header.Controls.Add($headerLabel)
 # Message
 
 $label = New-Object System.Windows.Forms.Label
-$label.Text = "Updates and maintenance are complete.`r`n`r`nFor optimal performance and security, please restart your computer.`r`n`r`nCurrent uptime: $uptimeStr"
+$label.Text = "Updates and maintenance are complete.`r`n`r`nFor optimal performance and security, please restart your computer.`r`n`r`nCurrent uptime: $uptimeStr`r`nYour computer will restart automatically in $ForceRebootMinutes minutes."
 $label.Size = New-Object System.Drawing.Size(460,110)
 $label.Location = New-Object System.Drawing.Point(25,65)
 $label.Font = New-Object System.Drawing.Font("Segoe UI",10)
@@ -59,6 +60,7 @@ $rebootBtn.ForeColor = "White"
 $rebootBtn.FlatStyle = "Flat"
 $rebootBtn.Add_Click({
     $form.Tag = "Reboot"
+    $timer.Stop()
     $form.Close()
 })
 $form.Controls.Add($rebootBtn)
@@ -93,15 +95,24 @@ ASTi IT Department
 $footer.Location = New-Object System.Drawing.Point(20,270)
 $form.Controls.Add($footer)
 
-# Auto-close timer (Cancel)
-
+# Auto-close timer (Cancel/dismiss after timeout)
 $timer = New-Object System.Windows.Forms.Timer
-$timer.Interval = $TimeoutSeconds * 2000
+$timer.Interval = $TimeoutSeconds * 1000
 $timer.Add_Tick({
     $timer.Stop()
     $form.Close()
 })
 $timer.Start()
+
+# Forced reboot timer
+$forceTimer = New-Object System.Windows.Forms.Timer
+$forceTimer.Interval = $ForceRebootMinutes * 60 * 1000
+$forceTimer.Add_Tick({
+    $forceTimer.Stop()
+    $form.Tag = "Reboot"
+    $form.Close()
+})
+$forceTimer.Start()
 
 # Bring dialog box to foreground
 
@@ -111,10 +122,23 @@ $form.Add_Shown({
     $form.Focus()
 })
 
-
 # Show dialog
-
 $form.ShowDialog() | Out-Null
+$timer.Stop()
+
+# Result handling
+if ($form.Tag -eq "Reboot") {
+    $forceTimer.Stop()
+    Start-Process shutdown.exe -ArgumentList "/r /f /t 60"
+} else {
+    # If user cancels/dismisses, then wait out the remaining force reboot time
+    $forceTimer.Stop()
+    $remainingMs = ($ForceRebootMinutes * 60 * 1000) - ($TimeoutSeconds * 1000)
+    if ($remainingMs -gt 0) {
+        Start-Sleep -Milliseconds $remainingMs
+    }
+    Start-Process shutdown.exe -ArgumentList "/r /f /t 60"
+}
 
 
 # Result handling
