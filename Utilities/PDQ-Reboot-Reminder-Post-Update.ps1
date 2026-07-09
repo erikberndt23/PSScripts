@@ -2,15 +2,21 @@
 Add-Type -AssemblyName System.Drawing
 
 # Settings
-
 $TimeoutSeconds = 300
 $AccentColor     = [System.Drawing.ColorTranslator]::FromHtml("#3A61AA")
 $BackgroundColor = [System.Drawing.ColorTranslator]::FromHtml("#E7E9ED")
 $uptime = (Get-Date) - (gcim Win32_OperatingSystem).LastBootUpTime
 $uptimeStr = "{0}d {1}h {2}m" -f $uptime.Days, $uptime.Hours, $uptime.Minutes
 $forceRebootMinutes = 240
-# Build Form
 
+# Add Scheduled forced reboot via Task Scheduler
+$rebootTime = (Get-Date).AddMinutes($ForceRebootMinutes)
+$action = New-ScheduledTaskAction -Execute "shutdown.exe" -Argument "/r /f /t 0"
+$trigger = New-ScheduledTaskTrigger -Once -At $rebootTime
+$settings = New-ScheduledTaskSettingsSet -AllowStartIfOnBatteries -DontStopIfGoingOnBatteries
+Register-ScheduledTask -TaskName "ForcedReboot" -Action $action -Trigger $trigger -Settings $settings -RunLevel Highest -Force
+
+# Build Form
 $form = New-Object System.Windows.Forms.Form
 $form.Text = "Restart Required"
 $form.Size = New-Object System.Drawing.Size(560,330)
@@ -25,7 +31,6 @@ $form.BackColor = $BackgroundColor
 $form.Tag = "Cancel"
 
 # Header
-
 $header = New-Object System.Windows.Forms.Panel
 $header.Dock = "Top"
 $header.Height = 45
