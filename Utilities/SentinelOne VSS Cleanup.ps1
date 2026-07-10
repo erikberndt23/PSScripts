@@ -1,6 +1,6 @@
 # retrieve the machine passphrase from the SentinelOne console
 # open an administrative command prompt and run 
-cd "c:\program files\sentinelone\sentinel agent 22.2.4.558\"
+Set-Location "c:\program files\sentinelone\sentinel agent 22.2.4.558\"
 sentinelctl.exe unprotect -k "passphrase"
 sentinelctl.exe unload -slam -k "passphrase"
 sentinelctl.exe config -p vssConfig.vssProtection -v false
