@@ -2,13 +2,11 @@ Import-Module ActiveDirectory
 
 # Configuration
 $groupName  = "service accounts"
-$startDate  = (Get-Date).AddDays(-30)
+$gmsaOU     = "OU=Managed Service Accounts,DC=asti-usa,DC=net"
+
 $outputPath = "C:\Logs\GroupLoginActivity_$(Get-Date -Format 'yyyyMMdd')_$env:COMPUTERNAME.csv"
 
-# esolve the group
-# If you have multiple groups with the same name in different OUs, use:
-#   Get-ADGroup -Filter "Name -eq '$groupName'" -SearchBase "OU=Groups,DC=yourdomain,DC=com"
-# to scope to the correct one instead of the line below.
+# Resolve the group
 $group = Get-ADGroup -Identity $groupName
 
 if (-not $group) {
@@ -18,19 +16,29 @@ if (-not $group) {
 
 Write-Host "Resolved group: $($group.DistinguishedName)"
 
-# Get recursive group membership via LDAP matching rule
-$members = Get-ADUser -LDAPFilter "(memberOf:1.2.840.113556.1.4.1941:=$($group.DistinguishedName))" |
+# Get recursive group membership via LDAP matching rule (includes users and gMSAs that are members)
+$groupMembers = Get-ADObject -LDAPFilter "(&(memberOf:1.2.840.113556.1.4.1941:=$($group.DistinguishedName))(|(objectClass=user)(objectClass=msDS-GroupManagedServiceAccount)))" -Properties SamAccountName |
     Select-Object -ExpandProperty SamAccountName
 
+Write-Host "Found $($groupMembers.Count) users/gMSAs as members of '$groupName'"
+
+# Also pull ALL gMSAs directly from the specified OU, regardless of group membership
+$ouGMSAs = Get-ADServiceAccount -Filter * -SearchBase $gmsaOU |
+    Select-Object -ExpandProperty SamAccountName
+
+Write-Host "Found $($ouGMSAs.Count) gMSAs directly in OU '$gmsaOU'"
+
+# Combine both sets, removing duplicates (in case a gMSA is both in the OU and a group member)
+$members = @($groupMembers + $ouGMSAs) | Select-Object -Unique
+
 if (-not $members -or $members.Count -eq 0) {
-    Write-Warning "No members resolved for group '$groupName'. Exiting."
+    Write-Warning "No members resolved from group '$groupName' or OU '$gmsaOU'. Exiting."
     return
 }
 
-Write-Host "Found $($members.Count) users in group '$groupName'"
+Write-Host "Total unique accounts to check: $($members.Count)"
 
 # Query local Security log for logon events (4624) in the last 30 days
-# Returns all logon types, including interactive, network, remote interactive (RDP), etc.
 $results = Get-WinEvent -FilterHashtable @{
     LogName   = 'Security'
     Id        = 4624
@@ -49,7 +57,7 @@ $results | Sort-Object TimeCreated -Descending |
 
 Write-Host "Done. $($results.Count) logon events found on $env:COMPUTERNAME. Exported to $outputPath"
 
-#To merge CSVs from multiple DCs later, run this on your workstation:
+# To merge CSVs from multiple DCs later, run this on your workstation:
 # Get-ChildItem "C:\Logs\*.csv" |
 #     Import-Csv |
 #     Sort-Object TimeCreated -Descending |
