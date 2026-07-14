@@ -57,8 +57,6 @@ $results | Sort-Object TimeCreated -Descending |
 
 Write-Host "Done. $($results.Count) logon events found on $env:COMPUTERNAME. Exported to $outputPath"
 
-# To merge CSVs from multiple DCs later, run this on your workstation:
-# Get-ChildItem "C:\Logs\*.csv" |
-#     Import-Csv |
-#     Sort-Object TimeCreated -Descending |
-#     Export-Csv "C:\Logs\GroupLoginActivity_Combined.csv" -NoTypeInformation
+# To merge CSVs from multiple DCs later:
+#Get-ChildItem "C:\Logs\*.csv" | ForEach-Object {
+#Import-Csv -Path $_.FullName } | Sort-Object TimeCreated -Descending | Export-Csv "C:\Logs\GroupLoginActivity_Combined.csv" -NoTypeInformation
