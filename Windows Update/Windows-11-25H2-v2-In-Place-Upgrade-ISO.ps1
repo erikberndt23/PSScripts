@@ -38,7 +38,7 @@ Write-Output "[$(Get-Date)] Starting Windows 11 upgrade from $setupPath" | Out-F
 
 # Run setup.exe silently
 
-$arguments = "/auto upgrade /bitlocker alwayssuspend /quiet /eula accept /dynamicupdate disable /copyLogs `"$logFolder`""
+$arguments = "/auto upgrade /bitlocker alwayssuspend /quiet /eula accept /dynamicupdate disable /noreboot /copyLogs `"$logFolder`""
 $process = Start-Process -FilePath "$setupPath" -ArgumentList $arguments -Wait -PassThru
 $exitCode = $process.ExitCode
 
